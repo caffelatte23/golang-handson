@@ -87,3 +87,12 @@ cd handson/lru           && go test -bench=. -benchmem
 - **とにかく作りたい**: 第14章か第15章から始め、分からない文法が出てきたら第1部に戻ります。
 
 ハンズオンは完成コードを写経するだけでなく、**各章末の「🚀 発展課題」に取り組む** ことで理解が深まります。
+
+## ライセンス
+
+| 対象 | ライセンス |
+| --- | --- |
+| 本文 (`book/`、各 README などのドキュメント) | [CC BY 4.0](LICENSE-CC-BY-4.0) |
+| コード (`exercises/`、`handson/`、`scripts/`、本文中のサンプルコード) | [MIT](LICENSE) |
+
+第1部は Go Authors による A Tour of Go と Effective Go (CC BY 4.0 / BSD) を参考にしています。詳しくは [付録のクレジット](book/99-appendix.md#クレジット) を参照してください。
