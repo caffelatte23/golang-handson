@@ -51,7 +51,10 @@ jobs:
           cache-dependency-path: exercises/go.mod
       - run: go vet ./...                       # 未実装の演習 (exercise.go) もコンパイルできること
       - run: go test -race -tags solution ./... # 解答例がテストを通ること
-      - uses: golangci/golangci-lint-action@v8
+      # golangci-lint のバイナリは、自身のビルドに使われた Go より新しい標準ライブラリを解析できないため、
+      # lint は最小対応バージョンでだけ実行する (テストは両方のバージョンで実行する)
+      - if: matrix.go == '1.24'
+        uses: golangci/golangci-lint-action@v8
         with:
           version: v2.5
           working-directory: exercises
