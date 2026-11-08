@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (${{ matrix.module }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [todo, bookshelf-api, linkcheck, lru]
+    defaults:
+      run:
+        working-directory: handson/${{ matrix.module }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: handson/${{ matrix.module }}/go.mod
+          cache-dependency-path: handson/${{ matrix.module }}/go.mod
+      - run: go vet ./...
+      - run: go test -race -coverprofile=coverage.out ./...
+      - uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.5
+          working-directory: handson/${{ matrix.module }}
+          args: --config ${{ github.workspace }}/.golangci.yml
+
+  exercises:
+    name: exercises (solution, go ${{ matrix.go }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ["1.24", "stable"] # 最小対応バージョンと最新の安定版
+    defaults:
+      run:
+        working-directory: exercises
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+          cache-dependency-path: exercises/go.mod
+      - run: go vet ./...                       # 未実装の演習 (exercise.go) もコンパイルできること
+      - run: go test -race -tags solution ./... # 解答例がテストを通ること
+      # golangci-lint のバイナリは、自身のビルドに使われた Go より新しい標準ライブラリを解析できないため、
+      # lint は最小対応バージョンでだけ実行する (テストは両方のバージョンで実行する)
+      - if: matrix.go == '1.24'
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.5
+          working-directory: exercises
+          args: --config ${{ github.workspace }}/.golangci.yml --build-tags solution
+
+  book:
+    name: book code samples (go ${{ matrix.go }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ["1.24", "stable"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+          cache: false
+      - run: python3 scripts/check_book_code.py
