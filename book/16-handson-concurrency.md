@@ -97,6 +97,9 @@ func (c *Checker) Check(ctx context.Context, urls []string) ([]Result, error) {
 
 	for i, u := range urls {
 		g.Go(func() error { // Go 1.22+ ではループ変数がイテレーションごとに別物なので安全
+			if err := ctx.Err(); err != nil {
+				return err // すでに中断されていれば実行しない (results[i] はゼロ値のまま)
+			}
 			results[i] = c.checkOne(ctx, u)
 			// 個々のリンク切れは「結果」であってエラーではないので nil を返す。
 			// ctx のキャンセルだけは全体を止めるべきエラーとして返す。
@@ -354,7 +357,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	for _, r := range results {
 		switch {
 		case r.URL == "":
-			continue // 中断で未実行
+			continue // 中断されたため実行されなかった URL
 		case r.Err != nil:
 			broken++
 			fmt.Fprintf(stdout, "✗ ERR  %-50s %v\n", r.URL, r.Err)

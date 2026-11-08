@@ -5,7 +5,7 @@ Go 言語の基礎から、**GitHub 上の主要 OSS の書き方・技術構成
 第1部は、公式の [A Tour of Go](https://go.dev/tour/) と [Effective Go](https://go.dev/doc/effective_go) が扱う内容をすべて含んでいます。本書だけで、言語の基礎から Go らしい書き方まで学べます。本文のサンプルプログラムは CI で実際に実行し、掲載している出力と一致することを確かめています。Tour と同じテーマの演習には、自動採点のテストを付けています。
 
 - 対象: Go 初心者〜初中級者 (他言語の経験がある方)
-- 動作確認: Go 1.24
+- 対応バージョン: Go 1.24 以上 (Go 1.24 と Go 1.27 で動作を確認。サポートされている最新版の利用を推奨)
 - OSS 調査時点: 2026 年 11 月 (kubernetes, cli/cli, prometheus, terraform, hugo, caddy, traefik, gitea, etcd, containerd, k6, minio, fzf, lazygit, glow の 15 リポジトリ)
 
 ## 目次
@@ -94,5 +94,6 @@ cd handson/lru           && go test -bench=. -benchmem
 | --- | --- |
 | 本文 (`book/`、各 README などのドキュメント) | [CC BY 4.0](LICENSE-CC-BY-4.0) |
 | コード (`exercises/`、`handson/`、`scripts/`、本文中のサンプルコード) | [MIT](LICENSE) |
+| A Tour of Go / Effective Go を元にしたサンプルコード (一覧は付録) | [BSD (The Go Authors)](LICENSE-GO) |
 
 第1部は Go Authors による A Tour of Go と Effective Go (CC BY 4.0 / BSD) を参考にしています。詳しくは [付録のクレジット](book/99-appendix.md#クレジット) を参照してください。

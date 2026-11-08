@@ -231,7 +231,7 @@ func main() {
 
 - デフォルト値が 1 か所にまとまります。
 - 設定項目を後から追加しても、**既存の呼び出し側のコードは変わりません** (後方互換性が保たれます)。
-- gRPC-Go の `grpc.NewServer(opts ...grpc.ServerOption)` や zap の `zap.New(core, zap.AddCaller())` などがこのパターンを使っています。考案したのは Dave Cheney の記事 *Functional options for friendly APIs* (2014) です。
+- gRPC-Go の `grpc.NewServer(opts ...grpc.ServerOption)` や zap の `zap.New(core, zap.AddCaller())` などがこのパターンを使っています。このパターンは Rob Pike のブログ記事 *Self-referential functions and the design of options* (2014 年 1 月) で紹介され、Dave Cheney の記事 *Functional options for friendly APIs* (同年) によって広く知られるようになりました。
 
 設定項目が少ないなら、`Config` 構造体を引数に取るほうが単純です (`http.Server{Addr: ..., ReadTimeout: ...}` はその例です)。
 
@@ -296,8 +296,10 @@ func main() {
 ```
 
 ```bash
-go run . && open http://localhost:1718/   # ブラウザで開く
+go run .   # サーバーが起動し、終了するまで待ち続ける
 ```
+
+起動したら、ブラウザで http://localhost:1718/ を開きます。サーバーは `Ctrl+C` で止めます。
 
 この短いプログラムでは、次の要素を使っています。
 

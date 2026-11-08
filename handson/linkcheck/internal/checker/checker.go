@@ -41,6 +41,9 @@ func (c *Checker) Check(ctx context.Context, urls []string) ([]Result, error) {
 
 	for i, u := range urls {
 		g.Go(func() error { // Go 1.22+ ではループ変数がイテレーションごとに別物なので安全
+			if err := ctx.Err(); err != nil {
+				return err // すでに中断されていれば実行しない (results[i] はゼロ値のまま)
+			}
 			results[i] = c.checkOne(ctx, u)
 			// 個々のリンク切れは「結果」であってエラーではないので nil を返す。
 			// ctx のキャンセルだけは全体を止めるべきエラーとして返す。

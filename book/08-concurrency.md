@@ -205,7 +205,7 @@ func main() {
 quit
 ```
 
-### default とタイムアウト
+### タイムアウトとキャンセル
 
 ```go
 select {
@@ -215,8 +215,19 @@ case <-time.After(3 * time.Second): // 3 秒待っても来なければタイム
 	return errors.New("timeout")
 case <-ctx.Done(): // キャンセルされた
 	return ctx.Err()
+}
+```
+
+### default — 待たずに進む (ノンブロッキング)
+
+`default` を書くと、どの channel も準備ができていないときに **待たずにすぐ** `default` が実行されます。そのため、`default` と `time.After` を同じ select に書いてもタイムアウトは働きません。
+
+```go
+select {
+case msg := <-msgs:
+	handle(msg)
 default:
-	// どの channel も準備ができていなければ、待たずにすぐここが実行される (ノンブロッキング)
+	// 今すぐ受け取れるメッセージがなければ、ここを実行して先に進む
 }
 ```
 

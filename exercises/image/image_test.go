@@ -13,6 +13,9 @@ func TestImage(t *testing.T) {
 	if !ok {
 		t.Fatal("Image does not implement image.Image")
 	}
+	if m.ColorModel() != color.RGBAModel {
+		t.Errorf("ColorModel = %v, want color.RGBAModel", m.ColorModel())
+	}
 	if b := m.Bounds(); b != image.Rect(0, 0, 16, 8) {
 		t.Errorf("Bounds = %v", b)
 	}

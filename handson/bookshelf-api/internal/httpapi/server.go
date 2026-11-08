@@ -35,10 +35,12 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("PUT /books/{id}", s.updateBook)
 	mux.HandleFunc("DELETE /books/{id}", s.deleteBook)
 
-	// ミドルウェアは func(http.Handler) http.Handler で表現し、外側から順に適用する
+	// ミドルウェアは func(http.Handler) http.Handler で表現する。
+	// 後から適用したものほど外側になる: logging(recoverer(mux))。
+	// logging を外側に置くことで、panic して recoverer が 500 を返したリクエストもログに残る
 	var h http.Handler = mux
-	h = logging(s.logger)(h)
 	h = recoverer(s.logger)(h)
+	h = logging(s.logger)(h)
 	return h
 }
 

@@ -72,6 +72,12 @@ type Cache[K comparable, V any] struct {
 	items    map[K]*list.Element
 
 	// OnEvict が設定されていれば、追い出し時に呼ばれます。
+	//
+	// 注意:
+	//   - キャッシュのロックを保持したまま呼ばれるため、OnEvict の中から
+	//     同じ Cache のメソッドを呼ぶとデッドロックします。
+	//   - New の直後、他の goroutine から使い始める前に設定してください
+	//     (使用中に書き換えるとデータ競合になります)。
 	OnEvict func(key K, value V)
 }
 
@@ -223,7 +229,7 @@ BenchmarkCache_Get-4   	43785204	        27.52 ns/op	       0 B/op	       0 allo
 
 - `ns/op`: 1 操作あたりの時間、`B/op` / `allocs/op`: 1 操作あたりのメモリ確保
 - `Get` はアロケーション 0 です。`Put` の 2 allocs は `entry` と `list.Element` の生成によるもの
-- 改善を試したら [`benchstat`](https://pkg.go.dev/golang.org/x/perf/cmd/benchstat) で統計的に比較するのが OSS の作法です (Go 本体の PR でも必須)
+- 改善を試したら [`benchstat`](https://pkg.go.dev/golang.org/x/perf/cmd/benchstat) で統計的に比較するのが OSS の作法です (Go 本体でも、性能改善の変更では benchstat の結果を示すことが求められます)
 
 ## Step 5. ファズテスト
 

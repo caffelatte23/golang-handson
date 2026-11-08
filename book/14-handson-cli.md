@@ -324,7 +324,7 @@ func NewRootCmd(d *Deps) *cobra.Command {
 	}
 	root.SetOut(d.Out)
 	root.SetErr(d.Err)
-	root.PersistentFlags().StringVarP(&file, "file", "f", "", "保存先 JSON ファイル (default: $XDG_CONFIG_HOME/todo/tasks.json)")
+	root.PersistentFlags().StringVarP(&file, "file", "f", "", "保存先 JSON ファイル (default: OS の設定ディレクトリ/todo/tasks.json)")
 
 	root.AddCommand(
 		newAddCmd(d),
@@ -651,6 +651,8 @@ source <(todo completion bash)
 ```bash
 go install github.com/<your-name>/todo@latest
 ```
+
+> 💡 本リポジトリの `handson/todo` のように、**リポジトリのサブディレクトリにあるモジュール** をバージョン付きで公開するときは、タグに **ディレクトリ名を前に付けます** (`handson/todo/v0.1.0`)。リポジトリ直下のモジュールなら、単に `v0.1.0` です。
 
 ## 📦 OSS と比べてみよう — GitHub CLI のコマンド構造
 

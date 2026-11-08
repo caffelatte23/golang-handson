@@ -27,6 +27,12 @@ type Cache[K comparable, V any] struct {
 	items    map[K]*list.Element
 
 	// OnEvict が設定されていれば、追い出し時に呼ばれます。
+	//
+	// 注意:
+	//   - キャッシュのロックを保持したまま呼ばれるため、OnEvict の中から
+	//     同じ Cache のメソッドを呼ぶとデッドロックします。
+	//   - New の直後、他の goroutine から使い始める前に設定してください
+	//     (使用中に書き換えるとデータ競合になります)。
 	OnEvict func(key K, value V)
 }
 

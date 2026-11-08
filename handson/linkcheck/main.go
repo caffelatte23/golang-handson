@@ -66,7 +66,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	for _, r := range results {
 		switch {
 		case r.URL == "":
-			continue // 中断で未実行
+			continue // 中断されたため実行されなかった URL
 		case r.Err != nil:
 			broken++
 			fmt.Fprintf(stdout, "✗ ERR  %-50s %v\n", r.URL, r.Err)

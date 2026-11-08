@@ -83,6 +83,11 @@ Effective Go は 2009 年に書かれて以降、大きくは更新されてい�
 
 ## クレジット
 
-- 第1部の構成とトピック、演習のテーマは、Go Authors による [A Tour of Go](https://go.dev/tour/) と [Effective Go](https://go.dev/doc/effective_go) を参考にしています。go.dev のドキュメントは [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/) で、コードは [BSD ライセンス](https://go.dev/LICENSE) で公開されています。本書の解説とサンプルコードは本書のために書き下ろしたものです。ただし、`ByteSize`、`trace`/`un`、`safelyDo`、`Sequence`、`Job`、リークするバッファなど、Effective Go の有名な例を元にしたものはその旨を本文に記しています。
+- 第1部の構成とトピック、演習のテーマは、Go Authors による [A Tour of Go](https://go.dev/tour/) と [Effective Go](https://go.dev/doc/effective_go) を参考にしています。go.dev のドキュメントは [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/) で、コードは BSD ライセンスで公開されています。
+- 本書の解説文は、本書のために書き下ろしたものです。
+- 次のサンプルコードは、A Tour of Go または Effective Go のプログラムを元にしています (変数名や出力を変えたもの、日本語のコメントを加えたものを含みます)。これらのコードの著作権は The Go Authors に帰属し、BSD ライセンス ([`LICENSE-GO`](../LICENSE-GO)) が適用されます。
+  - **A Tour of Go 由来**: 第2章の `add`・`swap`・`split`、基本型の表示 (`ToBe`・`MaxInt`・`z`)、`Big`・`Small`・`needInt`・`needFloat`、第3章の `pow`、`for` の合計、`defer` の hello/world、第4章のポインタ (`i`・`j`)、`Vertex`、`primes`、`printSlice`、`Bell Labs`/`Google` のマップ、`compute`・`hypot`、`adder`、第5章の `Vertex.Abs`・`Scale`、`MyFloat`、インターフェース値と nil レシーバの例、型アサーション、`Person` の Stringer、`strings.NewReader` を 8 バイトずつ読む例、第7章の `strconv.Atoi` と `MyError`、第8章の `sum`、`fibonacci` (close と select)、`SafeCounter`、第6章の `Index`、および `exercises/` の各演習のテーマと `exercises/equivtree/tree` の木の生成方法
+  - **Effective Go 由来**: `ByteSize`、`trace`/`un`、`Contents`、`unhex`、`safelyDo`、`Sequence`、`Job`、`Counter`/`HandlerFunc`、channel の channel (`Request`)、リークするバッファ (`freeList`)、`PathError` の説明、`init` と `$USER` の例
+- それ以外のサンプルコード、演習のテスト、ハンズオンのコードは本書のために書いたもので、MIT ライセンス ([`LICENSE`](../LICENSE)) で提供します。本文は CC BY 4.0 ([`LICENSE-CC-BY-4.0`](../LICENSE-CC-BY-4.0)) で提供します。
 - 「Go Proverbs」は Rob Pike の講演 (GopherFest 2015) によるものです。
-- 第2部の OSS 調査では、各プロジェクトの公開リポジトリにある `go.mod` や設定ファイルを参照しました。引用したコードの著作権は、それぞれのプロジェクトに帰属します。
+- 第2部の OSS 調査では、各プロジェクトの公開リポジトリにある `go.mod` や設定ファイルを参照しました。引用したコードや設定の著作権は、それぞれのプロジェクトに帰属します。

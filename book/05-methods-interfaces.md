@@ -525,9 +525,10 @@ func main() {
 	// 書き込み: 文字列 → gzip 圧縮 → バッファ
 	var buf bytes.Buffer
 	zw := gzip.NewWriter(&buf)
-	io.Copy(zw, strings.NewReader(strings.Repeat("gopher ", 100)))
+	original := strings.Repeat("gopher ", 100)
+	io.Copy(zw, strings.NewReader(original))
 	zw.Close()
-	fmt.Println("compressed:", buf.Len(), "bytes")
+	fmt.Println("compressed:", buf.Len() < len(original)) // 700 バイトが数十バイトになる
 
 	// 読み込み: バッファ → gzip 展開 → 先頭 20 バイトだけ → 標準出力
 	zr, _ := gzip.NewReader(&buf)
@@ -537,7 +538,7 @@ func main() {
 ```
 
 ```text
-compressed: 37 bytes
+compressed: true
 gopher gopher gopher
 ```
 

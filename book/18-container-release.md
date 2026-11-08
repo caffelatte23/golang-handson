@@ -142,10 +142,12 @@ jobs:
 
 ```bash
 git tag v0.1.0 && git push origin v0.1.0
+# サブディレクトリのモジュールを `go install ...@v0.1.0` でも取得できるようにするには、
+# handson/todo/v0.1.0 のようにディレクトリ名付きのタグも必要 (第14章)
 # → GitHub Releases に linux/darwin/windows × amd64/arm64 のバイナリが並ぶ
 ```
 
-さらに `brews:` (Homebrew tap)、`nfpms:` (deb/rpm)、`dockers:` (コンテナイメージ)、`signs:` (cosign 署名) などを追加すれば、パッケージマネージャ経由の配布も自動化できます。GitHub CLI の [`.goreleaser.yml`](https://github.com/cli/cli/blob/trunk/.goreleaser.yml) はその全部入りの好例です。
+さらに `brews:` (Homebrew tap)、`nfpms:` (deb/rpm)、`dockers:` (コンテナイメージ)、`signs:` (cosign 署名) などを追加すれば、パッケージマネージャ経由の配布も自動化できます。GitHub CLI の [`.goreleaser.yml`](https://github.com/cli/cli/blob/trunk/.goreleaser.yml) は、OS ごとのビルド設定、`nfpms:` による deb/rpm の生成、ビルド前後のフック (署名やマニュアル生成) などを組み合わせた実例として参考になります。
 
 ## 18.3 配布方法のまとめ
 

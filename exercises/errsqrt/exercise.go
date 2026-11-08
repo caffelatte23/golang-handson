@@ -8,7 +8,7 @@
 //     "cannot Sqrt negative number: -2" のようなメッセージを返す
 //  2. Sqrt は x < 0 のとき ErrNegativeSqrt(x) をエラーとして返す
 //
-// ヒント: Error メソッドの中で fmt.Sprint(e) を呼ぶと無限ループになります。なぜでしょう?
+// ヒント: Error メソッドの中で fmt.Sprint(e) を呼ぶと無限再帰になり、スタックオーバーフローで異常終了します。なぜでしょう?
 //
 // 確認: go test ./errsqrt/
 package errsqrt

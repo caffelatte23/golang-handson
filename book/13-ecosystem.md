@@ -17,7 +17,8 @@ Go は「まず標準ライブラリで書く」文化が強い言語ですが�
 | [`spf13/cobra`](https://github.com/spf13/cobra) | **GitHub CLI, kubectl/Kubernetes, Hugo, etcd, Caddy, k6, Glow** | サブコマンド型 CLI の事実上の標準。補完スクリプトやドキュメント生成も可能 |
 | [`urfave/cli`](https://github.com/urfave/cli) (v3) | Gitea, containerd | 宣言的に書ける。cobra に次ぐ人気 |
 | [`alecthomas/kingpin`](https://github.com/alecthomas/kingpin) | Prometheus | 古参。後継は [`alecthomas/kong`](https://github.com/alecthomas/kong) (構造体タグで定義) |
-| 標準 `flag` | fzf, lazygit (独自パース) | サブコマンドが不要なら十分 |
+| 標準 `flag` | (小規模な CLI 全般) | サブコマンドが不要なら十分 |
+| その他 | fzf (引数を自前で解析)、lazygit ([`integrii/flaggy`](https://github.com/integrii/flaggy)) | 依存を減らしたい・独自の要件がある場合 |
 | [`charmbracelet/bubbletea`](https://github.com/charmbracelet/bubbletea) + lipgloss | GitHub CLI, Glow | リッチな TUI (Elm アーキテクチャ) |
 
 → **第14章で cobra、第16章で標準 `flag`** を使った CLI を作ります。

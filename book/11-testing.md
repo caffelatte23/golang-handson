@@ -102,8 +102,14 @@ Go では「モックライブラリありき」ではなく、**小さなイン
 
 ```go
 type memStore struct{ data todo.List }
-func (m *memStore) Load() (*todo.List, error) { c := m.data; return &c, nil }
-func (m *memStore) Save(l *todo.List) error   { m.data = *l; return nil }
+
+func (m *memStore) Load() (*todo.List, error) {
+	c := m.data
+	c.Tasks = slices.Clone(m.data.Tasks) // スライスは配列を共有するのでコピーする (第14章)
+	return &c, nil
+}
+
+func (m *memStore) Save(l *todo.List) error { m.data = *l; return nil }
 ```
 
 インターフェースが大きい場合は [`go.uber.org/mock`](https://github.com/uber-go/mock) (gomock の後継) の `mockgen` で生成する方法もあります。

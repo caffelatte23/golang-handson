@@ -26,7 +26,7 @@ Go はクラウドネイティブなバックエンド開発で広く使われ�
 | PUT | `/books/{id}` | 更新 | 200 |
 | DELETE | `/books/{id}` | 削除 | 204 |
 
-エラーは `{"error": "...", "details": [...]}` 形式で返します (400 / 404 / 405 / 422 / 500)。
+アプリケーションのエラーは `{"error": "...", "details": [...]}` 形式の JSON で返します (400 / 404 / 422 / 500)。ただし、**存在しないパスへの 404 と、メソッドが合わないときの 405 は `ServeMux` が返すので、プレーンテキスト** (`404 page not found` など) になります。すべてを JSON にそろえたい場合は、発展課題を参照してください。
 
 ## Step 1. プロジェクトを作る
 
@@ -282,10 +282,12 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("PUT /books/{id}", s.updateBook)
 	mux.HandleFunc("DELETE /books/{id}", s.deleteBook)
 
-	// ミドルウェアは func(http.Handler) http.Handler で表現し、外側から順に適用する
+	// ミドルウェアは func(http.Handler) http.Handler で表現する。
+	// 後から適用したものほど外側になる: logging(recoverer(mux))。
+	// logging を外側に置くことで、panic して recoverer が 500 を返したリクエストもログに残る
 	var h http.Handler = mux
-	h = logging(s.logger)(h)
 	h = recoverer(s.logger)(h)
+	h = logging(s.logger)(h)
 	return h
 }
 
@@ -410,7 +412,7 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 
 **ポイント**
 
-- `mux.HandleFunc("GET /books/{id}", ...)` と `r.PathValue("id")` は **Go 1.22 の新機能**。これ以前は chi や gorilla/mux が必要でした。メソッドが合わないと自動で `405 Method Not Allowed` を返します。
+- `mux.HandleFunc("GET /books/{id}", ...)` と `r.PathValue("id")` は **Go 1.22 の新機能**。これ以前は chi や gorilla/mux が必要でした。メソッドが合わないと自動で `405 Method Not Allowed` (プレーンテキスト) を返します。
 - `json.Decoder.DisallowUnknownFields()` でタイプミスしたフィールドを検出し、`http.MaxBytesReader` で巨大なリクエストを防ぎます。
 - `writeError` で **ドメインエラー → HTTP ステータス** の変換を 1 か所に集約。ハンドラはエラーをそのまま渡すだけです。
 - 500 エラーの詳細はログにだけ出し、クライアントには返しません (情報漏えい防止)。
@@ -488,6 +490,7 @@ func recoverer(logger *slog.Logger) func(http.Handler) http.Handler {
 **ポイント**
 
 - Go のミドルウェアは `func(http.Handler) http.Handler` という **ただの関数** です。chi や他のライブラリのミドルウェアもこの形なので相互運用できます。
+- 適用する順番に注意しましょう。`server.go` では `recoverer` → `logging` の順に包んでいるので、外側から `logging(recoverer(mux))` となります。`logging` を外側に置くと、panic して `recoverer` が 500 を返したリクエストもアクセスログに残ります。逆にすると、panic したリクエストはログに残りません。
 - `http.ResponseWriter` を埋め込んだ構造体で `WriteHeader` を上書きし、ステータスコードを記録しています (埋め込みによる委譲、第5章)。
 - ラップすると、元の ResponseWriter が持っていた `http.Flusher` などのインターフェースが外から見えなくなります。`Unwrap()` メソッドを用意しておくと、`http.ResponseController` が内側をたどって `Flush` などを呼べるようになります。
 - `log/slog` の `InfoContext` に `r.Context()` を渡しておくと、後で OpenTelemetry のトレース ID をログに載せる Handler を足すときに役立ちます。
@@ -761,5 +764,6 @@ go test -race -cover ./...
 3. **認証**: `Authorization: Bearer <token>` を検証するミドルウェアを書こう。
 4. **リクエスト ID**: ミドルウェアで ID を生成して `context` に入れ、ログに出力しよう。
 5. **メトリクス**: [`prometheus/client_golang`](https://github.com/prometheus/client_golang) で `/metrics` を公開しよう。
-6. **OpenAPI**: [oapi-codegen](https://github.com/oapi-codegen/oapi-codegen) で OpenAPI 定義からハンドラのインターフェースを生成する方式に書き換えよう。
-7. **ルーター比較**: 同じ API を chi / gin / echo で書き直し、書き味を比べてみよう。
+6. **エラー形式の統一**: 存在しないパスやメソッド違いのときも JSON でエラーを返すようにしよう (ヒント: `ServeMux` に渡す前にパターンを判定するか、レスポンスをラップしてステータス 404/405 のときに本文を差し替える)。
+7. **OpenAPI**: [oapi-codegen](https://github.com/oapi-codegen/oapi-codegen) で OpenAPI 定義からハンドラのインターフェースを生成する方式に書き換えよう。
+8. **ルーター比較**: 同じ API を chi / gin / echo で書き直し、書き味を比べてみよう。
