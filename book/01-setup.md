@@ -105,7 +105,7 @@ GOOS=darwin  GOARCH=arm64 go build -o hello-mac .
 GOOS=linux   GOARCH=arm64 CGO_ENABLED=0 go build -o hello-linux-arm64 .
 ```
 
-`CGO_ENABLED=0` にすると C ライブラリに依存しない完全な静的バイナリになり、`scratch` や `distroless` といった極小コンテナイメージでも動きます (第14章)。
+`CGO_ENABLED=0` にすると C ライブラリに依存しない完全な静的バイナリになり、`scratch` や `distroless` といった極小コンテナイメージでも動きます (第18章)。
 
 ## 1.6 Playground
 

@@ -1,4 +1,4 @@
-# 第11章 ハンズオン② Web API — 書籍管理 REST API (net/http + slog)
+# 第15章 ハンズオン② Web API — 書籍管理 REST API (net/http + slog)
 
 Go はクラウドネイティブなバックエンド開発で広く使われています。この章では **外部フレームワークを使わず、標準ライブラリだけで** 本番運用を意識した REST API を作ります。
 
@@ -52,7 +52,7 @@ bookshelf-api/
 └── go.mod
 ```
 
-第6章で見た公式レイアウト (c) と同じ構成です。**外部依存はゼロ** です。
+第10章で見た公式レイアウト (c) と同じ構成です。**外部依存はゼロ** です。
 
 ## Step 2. ドメインモデルと Repository インターフェース
 
@@ -481,7 +481,7 @@ func recoverer(logger *slog.Logger) func(http.Handler) http.Handler {
 **ポイント**
 
 - Go のミドルウェアは `func(http.Handler) http.Handler` という **ただの関数** です。chi や他のライブラリのミドルウェアもこの形なので相互運用できます。
-- `http.ResponseWriter` を埋め込んだ構造体で `WriteHeader` を上書きし、ステータスコードを記録しています (埋め込みによる委譲、第2章)。
+- `http.ResponseWriter` を埋め込んだ構造体で `WriteHeader` を上書きし、ステータスコードを記録しています (埋め込みによる委譲、第5章)。
 - `log/slog` の `InfoContext` に `r.Context()` を渡しておくと、後で OpenTelemetry のトレース ID をログに載せる Handler を足すときに役立ちます。
 
 ## Step 6. main — 組み立て・設定・グレースフルシャットダウン

@@ -1,8 +1,8 @@
-# 第7章 テスト
+# 第11章 テスト
 
 Go はテストフレームワークを **標準で内蔵** しています。`xxx_test.go` に `TestXxx(t *testing.T)` を書いて `go test` するだけです。
 
-## 7.1 基本
+## 11.1 基本
 
 ```go
 // calc.go
@@ -33,7 +33,7 @@ go test -coverprofile=c.out ./... && go tool cover -html=c.out
 - メッセージは **`got X, want Y`** の形式が慣習 ([Go Code Review Comments](https://go.dev/wiki/CodeReviewComments#useful-test-failures))
 - `t.Errorf` は失敗を記録して続行、`t.Fatalf` は即終了
 
-## 7.2 テーブル駆動テスト
+## 11.2 テーブル駆動テスト
 
 **Go で最も重要なテストパターン** です。入力と期待値の表を作り、ループで回します。
 
@@ -65,7 +65,7 @@ func TestParseSize(t *testing.T) {
 
 `go test -run 'TestParseSize/invalid'` のように特定のケースだけ実行できます。
 
-## 7.3 便利な機能
+## 11.3 便利な機能
 
 | 機能 | 用途 |
 | --- | --- |
@@ -79,7 +79,7 @@ func TestParseSize(t *testing.T) {
 | `net/http/httptest` | HTTP サーバー/レスポンスのテスト |
 | `testing/synctest` (1.25+) | 時間に依存する並行処理を決定的にテスト |
 
-## 7.4 HTTP のテスト
+## 11.4 HTTP のテスト
 
 ```go
 func TestHealthz(t *testing.T) {
@@ -94,9 +94,9 @@ func TestHealthz(t *testing.T) {
 }
 ```
 
-実際のサーバーを立てる `httptest.NewServer(handler)` もあり、第11章・第12章のハンズオンで使います。
+実際のサーバーを立てる `httptest.NewServer(handler)` もあり、第15章・第16章のハンズオンで使います。
 
-## 7.5 モックはインターフェースで
+## 11.5 モックはインターフェースで
 
 Go では「モックライブラリありき」ではなく、**小さなインターフェース + 手書きのフェイク** が基本です。
 
@@ -108,7 +108,7 @@ func (m *memStore) Save(l *todo.List) error   { m.data = *l; return nil }
 
 インターフェースが大きい場合は [`go.uber.org/mock`](https://github.com/uber-go/mock) (gomock の後継) の `mockgen` で生成する方法もあります。
 
-## 7.6 Example テスト・ベンチマーク・ファズ
+## 11.6 Example テスト・ベンチマーク・ファズ
 
 ```go
 // Example: ドキュメントに載り、Output と一致するか検証される
@@ -135,9 +135,9 @@ func FuzzReverse(f *testing.F) {
 }
 ```
 
-→ 第13章で 3 つすべてを実装します。
+→ 第17章で 3 つすべてを実装します。
 
-## 7.7 📦 OSS のテスト事情
+## 11.7 📦 OSS のテスト事情
 
 2026 年 11 月時点の `go.mod` (直接依存) を調査した結果です。
 
@@ -171,5 +171,5 @@ assert.Equal(t, want, got)
 
 ## ✍️ 練習問題
 
-1. 第2章で作った `WordCount` にテーブル駆動テストを書こう。
+1. 第4章の演習で作った `WordCount` にテーブル駆動テストを書こう。
 2. `go test -cover` でカバレッジを 80% 以上にしてみよう。

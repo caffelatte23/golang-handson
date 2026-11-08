@@ -1,4 +1,4 @@
-# 第12章 ハンズオン③ 並行処理 — リンクチェッカー (goroutine + errgroup)
+# 第16章 ハンズオン③ 並行処理 — リンクチェッカー (goroutine + errgroup)
 
 Go の並行処理が最も活きるのは **I/O 待ちが多い処理** です。この章では、大量の URL を並行にチェックするコマンドを作り、goroutine・context・errgroup の実践的な使い方を学びます。
 
@@ -142,12 +142,12 @@ func (c *Checker) checkOne(ctx context.Context, url string) Result {
 
 ### channel 版との比較
 
-同じことは第5章のワーカープール (jobs/results チャネル) でも書けます。errgroup 版のほうが、
+同じことは第8章のワーカープール (jobs/results チャネル) でも書けます。errgroup 版のほうが、
 
 - エラー伝播とキャンセルが組み込み
 - `WaitGroup` や `close` の管理が不要
 
-と短く安全なため、**OSS ではこちらが主流** です (第5章参照: 調査対象 15 中 11 リポジトリが `golang.org/x/sync` に直接依存)。
+と短く安全なため、**OSS ではこちらが主流** です (第8章参照: 調査対象 15 中 11 リポジトリが `golang.org/x/sync` に直接依存)。
 
 ## Step 4. 並行処理のテスト
 

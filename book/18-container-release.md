@@ -1,8 +1,8 @@
-# 第14章 コンテナ化とリリース
+# 第18章 コンテナ化とリリース
 
 作ったアプリを **届ける** ところまでやってみましょう。Web API はコンテナイメージとして、CLI は複数 OS 向けバイナリとして配布するのが一般的です。
 
-## 14.1 Web API をコンテナ化する
+## 18.1 Web API をコンテナ化する
 
 `handson/bookshelf-api/Dockerfile`:
 
@@ -51,7 +51,7 @@ docker images bookshelf-api   # サイズを確認
 
 [ko](https://ko.build/) は Go 専用のコンテナイメージビルダーです。Dockerfile も Docker デーモンも不要で、`ko build ./cmd/server` だけで distroless ベースのイメージを作ってレジストリへ push できます (Knative や Sigstore などが採用)。
 
-## 14.2 CLI を GoReleaser でリリースする
+## 18.2 CLI を GoReleaser でリリースする
 
 `handson/todo/.goreleaser.yaml`:
 
@@ -147,7 +147,7 @@ git tag v0.1.0 && git push origin v0.1.0
 
 さらに `brews:` (Homebrew tap)、`nfpms:` (deb/rpm)、`dockers:` (コンテナイメージ)、`signs:` (cosign 署名) などを追加すれば、パッケージマネージャ経由の配布も自動化できます。GitHub CLI の [`.goreleaser.yml`](https://github.com/cli/cli/blob/trunk/.goreleaser.yml) はその全部入りの好例です。
 
-## 14.3 配布方法のまとめ
+## 18.3 配布方法のまとめ
 
 | 方法 | 対象 | コマンド |
 | --- | --- | --- |

@@ -1,6 +1,6 @@
-# 第6章 パッケージ設計とプロジェクト構成
+# 第10章 パッケージ設計とプロジェクト構成
 
-## 6.1 モジュールとパッケージ
+## 10.1 モジュールとパッケージ
 
 | 単位 | 実体 | 説明 |
 | --- | --- | --- |
@@ -17,7 +17,7 @@ tool golang.org/x/tools/cmd/stringer   ← Go 1.24+: 開発ツールの依存も
 
 `go.sum` は依存のハッシュ値で、**必ずコミット** します。
 
-## 6.2 パッケージ命名
+## 10.2 パッケージ命名
 
 [Effective Go](https://go.dev/doc/effective_go#package-names) / [Go Blog: Package names](https://go.dev/blog/package-names) の要点:
 
@@ -25,7 +25,7 @@ tool golang.org/x/tools/cmd/stringer   ← Go 1.24+: 開発ツールの依存も
 - 呼び出し側でパッケージ名が付くので **名前の重複を避ける**: `user.User` より `user.Account`、`http.HTTPServer` ではなく `http.Server`
 - `util`, `common`, `misc`, `helpers` のような **意味のない名前は避ける**
 
-## 6.3 公式が推奨するレイアウト
+## 10.3 公式が推奨するレイアウト
 
 Go チームは [Organizing a Go module](https://go.dev/doc/modules/layout) で、規模別の構成を示しています。
 
@@ -70,7 +70,7 @@ project/
 
 [`golang-standards/project-layout`](https://github.com/golang-standards/project-layout) というリポジトリが有名ですが、**Go 公式ではありません**。Go チームの Russ Cox 自身が「これは標準ではない」と issue でコメントしています。`pkg/` は Kubernetes などの初期の大規模プロジェクトの慣習で、**新規プロジェクトで必須ではありません**。迷ったら公式ガイドの (a)〜(c) に従いましょう。
 
-## 6.4 📦 OSS のプロジェクト構成を調査する
+## 10.4 📦 OSS のプロジェクト構成を調査する
 
 主要 OSS のリポジトリ構成を調べました (2026 年 11 月時点)。
 
@@ -101,21 +101,22 @@ project/
 3. **`internal/` の活用が増えている**。Terraform のように「全部 internal」にする例もある。外部公開は互換性維持のコストを伴うため。
 4. **レイヤー別 (controller/service/repository) より機能別 (user/, order/)** に分けるほうが Go では一般的。標準ライブラリ (`net/http`, `encoding/json`) もそうなっている。
 
-## 6.5 本書のハンズオンの構成
+## 10.5 本書のハンズオンの構成
 
 ```
+exercises/           ← 第3〜8章の演習 (1 モジュール。演習ごとにパッケージを分けている)
 handson/
-├── todo/            ← (b) ルート main.go + internal/   [第10章]
+├── todo/            ← (b) ルート main.go + internal/   [第14章]
 │   ├── main.go
 │   └── internal/{cli,todo}/
-├── bookshelf-api/   ← (c) cmd/ + internal/            [第11章]
+├── bookshelf-api/   ← (c) cmd/ + internal/            [第15章]
 │   ├── cmd/server/main.go
 │   └── internal/{book,httpapi}/
-├── linkcheck/       ← (b)                              [第12章]
-└── lru/             ← ライブラリ (ルートが公開パッケージ) [第13章]
+├── linkcheck/       ← (b)                              [第16章]
+└── lru/             ← ライブラリ (ルートが公開パッケージ) [第17章]
 ```
 
-## 6.6 依存の向きを整理する
+## 10.6 依存の向きを整理する
 
 パッケージ間に **循環 import は許されません**。自然と「ドメイン (内側) ← インフラ・UI (外側)」という向きになるよう設計します。
 
@@ -129,7 +130,7 @@ cmd/server  ──▶  internal/httpapi  ──▶  internal/book
 
 DI コンテナは Go では一般的ではなく、**main で手で組み立てる** のが主流です (大規模なら [google/wire](https://github.com/google/wire) や [uber-go/fx](https://github.com/uber-go/fx) という選択肢もあります)。
 
-## 6.7 メジャーバージョンと go.work
+## 10.7 メジャーバージョンと go.work
 
 - v2 以上の破壊的変更をリリースするときは **モジュールパスに `/v2` を付ける** (Semantic Import Versioning)。例: `github.com/cli/cli/v2`
 - 複数モジュールを同時に開発するときは `go work init ./a ./b` でワークスペースを作れる (`go.work` は通常コミットしない)

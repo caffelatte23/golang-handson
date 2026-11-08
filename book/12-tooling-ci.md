@@ -1,6 +1,6 @@
-# 第8章 ツールチェイン・Lint・CI/CD・リリース
+# 第12章 ツールチェイン・Lint・CI/CD・リリース
 
-## 8.1 フォーマッタ
+## 12.1 フォーマッタ
 
 | ツール | 内容 |
 | --- | --- |
@@ -10,7 +10,7 @@
 
 > *Gofmt's style is no one's favorite, yet gofmt is everyone's favorite.* — Go Proverbs
 
-## 8.2 静的解析
+## 12.2 静的解析
 
 | ツール | 内容 |
 | --- | --- |
@@ -60,7 +60,7 @@ linters:
 golangci-lint run ./...
 ```
 
-## 8.3 タスクランナー
+## 12.3 タスクランナー
 
 | 方式 | 採用 OSS (調査対象のうち) | 特徴 |
 | --- | --- | --- |
@@ -79,7 +79,7 @@ go get -tool golang.org/x/tools/cmd/stringer   # go.mod に tool 行が追加さ
 go tool stringer -type=Status                  # 固定バージョンで実行
 ```
 
-## 8.4 GitHub Actions で CI
+## 12.4 GitHub Actions で CI
 
 本リポジトリの [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) の要点:
 
@@ -122,7 +122,7 @@ updates:
     schedule: { interval: weekly }
 ```
 
-## 8.5 バージョン情報の埋め込み
+## 12.5 バージョン情報の埋め込み
 
 ビルド時に `-ldflags -X` で変数を上書きするのが定番です。
 
@@ -144,13 +144,13 @@ ldflags:
 
 > 💡 `-s -w` はデバッグ情報を削ってバイナリを小さくします。また Go 1.18 以降は `runtime/debug.ReadBuildInfo()` で VCS のコミットハッシュなどを取得できるので、ldflags なしでもある程度の情報は得られます。
 
-## 8.6 リリース: GoReleaser
+## 12.6 リリース: GoReleaser
 
 [GoReleaser](https://goreleaser.com/) は、タグを打つだけで **複数 OS/アーキテクチャのバイナリ、アーカイブ、チェックサム、GitHub Release、Homebrew tap、Docker イメージ、deb/rpm** までまとめて作ってくれるツールです。
 
 調査対象では **cli/cli, Caddy, fzf, Glow, lazygit** が `.goreleaser.yml` を持っていました。**配布される CLI ツールではほぼ標準** と言ってよいでしょう。
 
-→ 具体的な設定は第14章で扱います。
+→ 具体的な設定は第18章で扱います。
 
 ## ✅ チェックリスト
 

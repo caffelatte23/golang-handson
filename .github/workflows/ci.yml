@@ -32,3 +32,34 @@ jobs:
           version: v2.5
           working-directory: handson/${{ matrix.module }}
           args: --config ${{ github.workspace }}/.golangci.yml
+
+  exercises:
+    name: exercises (solution)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: exercises
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: exercises/go.mod
+          cache-dependency-path: exercises/go.mod
+      - run: go vet ./...                       # 未実装の演習 (exercise.go) もコンパイルできること
+      - run: go test -race -tags solution ./... # 解答例がテストを通ること
+      - uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.5
+          working-directory: exercises
+          args: --config ${{ github.workspace }}/.golangci.yml --build-tags solution
+
+  book:
+    name: book code samples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache: false
+      - run: python3 scripts/check_book_code.py
