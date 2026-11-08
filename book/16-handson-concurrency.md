@@ -74,7 +74,7 @@ type Result struct {
 	Err      error
 }
 
-// OK はリンクが正常 (2xx/3xx) かどうかを返します。
+// OK はリンクが正常かどうかを返します (ステータスが 400 未満 = 2xx/3xx なら正常)。
 func (r Result) OK() bool { return r.Err == nil && r.Status < 400 }
 
 // Checker は設定を保持します。
@@ -113,22 +113,30 @@ func (c *Checker) checkOne(ctx context.Context, url string) Result {
 	start := time.Now()
 	res := Result{URL: url}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodHead, url, nil)
+	// まず軽い HEAD で確認し、HEAD に対応していないサーバー (405/501) なら GET で再試行する
+	status, err := c.do(ctx, http.MethodHead, url)
+	if err == nil && (status == http.StatusMethodNotAllowed || status == http.StatusNotImplemented) {
+		status, err = c.do(ctx, http.MethodGet, url)
+	}
+	res.Status, res.Err, res.Duration = status, err, time.Since(start)
+	return res
+}
+
+func (c *Checker) do(ctx context.Context, method, url string) (int, error) {
+	req, err := http.NewRequestWithContext(ctx, method, url, nil)
 	if err != nil {
-		res.Err = err
-		return res
+		return 0, err
 	}
 	req.Header.Set("User-Agent", "linkcheck-handson/1.0")
 
 	resp, err := c.Client.Do(req)
-	res.Duration = time.Since(start)
 	if err != nil {
-		res.Err = err
-		return res
+		return 0, err
 	}
-	defer resp.Body.Close() // Body は必ず Close する (bodyclose linter がチェック)
-	res.Status = resp.StatusCode
-	return res
+	// Body は必ず Close する (bodyclose linter がチェック)。
+	// GET の本文は読まないので、すぐに閉じる
+	defer resp.Body.Close()
+	return resp.StatusCode, nil
 }
 ```
 
@@ -136,9 +144,10 @@ func (c *Checker) checkOne(ctx context.Context, url string) Result {
 
 1. **同時実行数の制限**: `g.SetLimit(n)` を設定すると、`g.Go` は実行中の goroutine が n 個未満になるまでブロックします。無制限に goroutine を起動すると、相手サーバーへの負荷やファイルディスクリプタ枯渇を招きます。
 2. **結果の順序保持**: `results[i] = ...` のように **各 goroutine が別々のインデックスに書く** だけならデータ競合にならず、mutex も channel も不要です。
-3. **ループ変数のキャプチャ**: Go 1.22 以降は `i`, `u` がイテレーションごとに新しい変数になるので、そのままクロージャで使えます。
+3. **ループ変数のキャプチャ**: Go 1.22 以降 (`go.mod` の `go` 行が 1.22 以上) は `i`, `u` がイテレーションごとに新しい変数になるので、そのままクロージャで使えます。
 4. **エラーの扱い分け**: 「404 だった」はチェック結果であり、全体を止める理由ではありません。errgroup にエラーとして返すのは「ctx がキャンセルされた」ときだけです。
-5. **`HEAD` リクエスト + `defer resp.Body.Close()`**: ボディを閉じ忘れるとコネクションが再利用されずリークします。
+5. **HEAD → GET のフォールバック**: 本文を取得しない軽い `HEAD` リクエストで確認しますが、HEAD に対応していないサーバーは 405 や 501 を返すため、その場合だけ `GET` で再試行します。
+6. **`defer resp.Body.Close()`**: レスポンスのボディを閉じ忘れると、コネクションが再利用されずリークします。
 
 ### channel 版との比較
 
@@ -170,17 +179,22 @@ func TestChecker_Check(t *testing.T) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/ok", func(w http.ResponseWriter, r *http.Request) {})
 	mux.HandleFunc("/missing", http.NotFound)
+	mux.HandleFunc("/get-only", func(w http.ResponseWriter, r *http.Request) { // HEAD 非対応のサーバーを模す
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
 	srv := httptest.NewServer(mux)
 	defer srv.Close()
 
 	c := &Checker{Client: srv.Client(), Concurrency: 2}
-	urls := []string{srv.URL + "/ok", srv.URL + "/missing", "http://127.0.0.1:1/unreachable"}
+	urls := []string{srv.URL + "/ok", srv.URL + "/missing", "http://127.0.0.1:1/unreachable", srv.URL + "/get-only"}
 
 	got, err := c.Check(context.Background(), urls)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(got) != 3 {
+	if len(got) != len(urls) {
 		t.Fatalf("len = %d", len(got))
 	}
 	// 入力順が保たれていること
@@ -197,6 +211,9 @@ func TestChecker_Check(t *testing.T) {
 	}
 	if got[2].Err == nil {
 		t.Errorf("unreachable should have error")
+	}
+	if !got[3].OK() {
+		t.Errorf("/get-only should be OK via GET fallback: %+v", got[3])
 	}
 }
 
@@ -404,7 +421,7 @@ time (grep -rhoE 'https://[^) ">]+' ../../book | sort -u | ./linkcheck -c 16 > /
 
 1. **ホストごとのレート制限**: 同じホストへの同時接続を 2 本までにしよう (`map[string]*semaphore.Weighted` や `golang.org/x/time/rate`)。
 2. **リトライ**: 5xx やタイムアウト時に指数バックオフで最大 3 回リトライしよう。
-3. **HEAD 非対応サーバー**: 405 が返ったら GET で再試行しよう。
+3. **HEAD を拒否するサーバー**: 403 を返すサーバーもあります。403 のときも GET で再試行するべきか、誤検知と見逃しのトレードオフを考えて実装しよう。
 4. **クローラー化**: HTML をパースして (`golang.org/x/net/html`) 同一ドメインのリンクを再帰的に辿ろう。訪問済み管理には mutex 付き map、深さ制限も忘れずに。
 5. **進捗表示**: 処理済み件数を stderr にリアルタイム表示しよう (`atomic.Int64` + `time.Ticker`)。
 6. **プロファイリング**: `go test -cpuprofile` や `net/http/pprof` でボトルネックを調べてみよう。

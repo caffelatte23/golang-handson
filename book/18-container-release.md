@@ -29,14 +29,14 @@ ENTRYPOINT ["/server"]
 
 **ポイント**
 
-- **マルチステージビルド**: ビルド用イメージ (`golang`、約 800MB) でコンパイルし、実行用イメージには **バイナリだけ** をコピーします。
+- **マルチステージビルド**: ビルド用イメージ (`golang`、数百 MB〜1GB 程度) でコンパイルし、実行用イメージには **バイナリだけ** をコピーします。
 - **`CGO_ENABLED=0`**: C ライブラリに依存しない静的バイナリにすることで、libc すら無い `distroless/static` や `scratch` で動きます。
 - **`-trimpath`**: バイナリからビルドマシンのファイルパスを除去 (再現性・情報漏えい対策)。
 - **`-ldflags="-s -w"`**: シンボル・デバッグ情報を削除してサイズ削減。
 - **`go.mod` / `go.sum` を先にコピーして `go mod download`**: ソースだけ変更した場合に依存ダウンロードのレイヤーキャッシュが効きます (依存がある場合は `COPY go.mod go.sum ./`)。
 - **nonroot ユーザー** で実行。
 
-最終イメージは **10MB 前後** になります (Go バイナリ約 6MB + distroless ベース)。Node.js や Python の API と比べて桁違いに小さく、起動も一瞬です。
+最終イメージは **おおむね 10MB 前後** になります (このサンプルの Go バイナリは約 6MB で、distroless/static のベースは数 MB です)。Node.js や Python の API と比べて桁違いに小さく、起動も一瞬です。
 
 ```bash
 cd handson/bookshelf-api
@@ -111,7 +111,7 @@ ls dist/
 
 ### GitHub Actions でタグ push 時に自動リリース
 
-`.github/workflows/release.yml` (単一モジュールのリポジトリに置く場合の例):
+`.github/workflows/release.yml` (**go.mod がリポジトリ直下にある** 単一モジュールのリポジトリに置く場合の例です。本リポジトリの `handson/todo` のようにサブディレクトリにある場合は、`goreleaser-action` に `workdir: handson/todo` を、`setup-go` に `go-version-file: handson/todo/go.mod` を指定します):
 
 ```yaml
 name: release

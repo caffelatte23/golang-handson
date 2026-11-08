@@ -124,10 +124,22 @@ func BenchmarkAdd(b *testing.B) {
 	}
 }
 
+// Reverse は文字列を rune 単位で逆順にする
+func Reverse(s string) string {
+	r := []rune(s)
+	slices.Reverse(r)
+	return string(r)
+}
+
 // ファズテスト (1.18+): go test -fuzz=FuzzReverse
 func FuzzReverse(f *testing.F) {
 	f.Add("hello")
 	f.Fuzz(func(t *testing.T, s string) {
+		if !utf8.ValidString(s) {
+			// 不正な UTF-8 は []rune 変換で U+FFFD に置き換わるため、元に戻らない。
+			// この前提がないと、ファザーはすぐにこの入力を見つけて失敗させる
+			t.Skip()
+		}
 		if Reverse(Reverse(s)) != s {
 			t.Errorf("double reverse mismatch: %q", s)
 		}

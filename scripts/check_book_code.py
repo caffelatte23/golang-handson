@@ -4,6 +4,7 @@
 - ```go ブロックのうち `package main` と `func main()` を含み、標準ライブラリだけを
   import しているものを `gofmt -l` / `go vet` / `go run` で検査する
 - ブロックの直後 (空行のみを挟む) に ```text ブロックがあれば、それを期待出力として比較する
+- 期待出力がある場合、プログラムが異常終了しても (panic の例など) 出力が一致すれば成功とする
 - ブロック直前の行に <!-- nocheck --> があるものはスキップする
   (意図的にコンパイルエラーや panic を起こす例など)
 
@@ -42,10 +43,10 @@ def stdlib_only(src):
 
 
 def gofmt_blocks(md):
-    """```go ブロックのうちパースできるもの (完全なファイル) を gofmt で整形して書き戻す。"""
+    """検査対象と同じ ```go ブロック (package main と func main を含むもの) を gofmt で整形して書き戻す。"""
     lines, bs = blocks(md.read_text())
     for lang, start, src, end in reversed(bs):
-        if lang != "go" or not src.lstrip().startswith(("package ", "//")) or "package " not in src:
+        if lang != "go" or "package main" not in src or "func main()" not in src:
             continue
         r = subprocess.run(["gofmt"], input=src + "\n", capture_output=True, text=True)
         if r.returncode == 0 and r.stdout.rstrip("\n") != src:
@@ -60,15 +61,17 @@ def main(paths):
         for md in [pathlib.Path(p) for p in paths] or sorted(pathlib.Path("book").glob("*.md")):
             gofmt_blocks(md)
     files = [pathlib.Path(p) for p in paths] or sorted(pathlib.Path("book").glob("*.md"))
-    failed = checked = 0
+    failed = checked = skipped = 0
     for md in files:
         lines, bs = blocks(md.read_text())
         for idx, (lang, start, src, end) in enumerate(bs):
             if lang != "go" or "package main" not in src or "func main()" not in src:
                 continue
             if start > 0 and "nocheck" in lines[start - 1]:
+                skipped += 1
                 continue
             if not stdlib_only(src):
+                skipped += 1
                 continue
             expected = None
             if idx + 1 < len(bs):
@@ -107,7 +110,7 @@ def main(paths):
                         failed += 1
                         print(f"✗ {loc}: output mismatch\n--- want\n{expected}\n--- got\n{got}\n")
                         continue
-    print(f"checked {checked} programs, {failed} failed")
+    print(f"checked {checked} programs, {failed} failed, {skipped} skipped (nocheck or non-stdlib imports)")
     return 1 if failed else 0
 
 

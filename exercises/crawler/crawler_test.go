@@ -56,3 +56,32 @@ func TestCrawl_Depth(t *testing.T) {
 		t.Errorf("depth 1 should fetch only the root: %v", got)
 	}
 }
+
+// 深さの制限が経路の取り方に左右されないこと。
+// root → slow → leaf (残り深さ 1 で leaf に到達)
+// root → leaf → deep (残り深さ 2 で leaf に到達するので deep まで取得できる)
+// DFS で先に slow 経由で leaf を「訪問済み」にすると、deep を取り逃がす。
+func TestCrawl_DepthByShortestPath(t *testing.T) {
+	f := &FakeFetcher{
+		Pages: map[string]FakeResult{
+			"root": {"root", []string{"slow", "leaf"}},
+			"slow": {"slow", []string{"leaf"}},
+			"leaf": {"leaf", []string{"deep"}},
+			"deep": {"deep", nil},
+		},
+	}
+	for range 20 { // 実行順に依存するバグを見つけやすくするため繰り返す
+		got := Crawl("root", 3, f)
+		if _, ok := got["deep"]; !ok || len(got) != 4 {
+			t.Fatalf("got %v, want root, slow, leaf, deep", keys(got))
+		}
+	}
+}
+
+func keys(m map[string]string) []string {
+	var ks []string
+	for k := range m {
+		ks = append(ks, k)
+	}
+	return ks
+}

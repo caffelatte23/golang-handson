@@ -442,6 +442,13 @@ func (r *statusRecorder) WriteHeader(code int) {
 	r.ResponseWriter.WriteHeader(code)
 }
 
+// Unwrap は元の ResponseWriter を返します。
+// http.ResponseController はこれを使ってラップの内側をたどるので、
+// Flush や Hijack などの機能がミドルウェアを通しても使えます (Go 1.20+)。
+func (r *statusRecorder) Unwrap() http.ResponseWriter {
+	return r.ResponseWriter
+}
+
 // logging はアクセスログを構造化ログ (log/slog) で出力するミドルウェアです。
 func logging(logger *slog.Logger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
@@ -482,6 +489,7 @@ func recoverer(logger *slog.Logger) func(http.Handler) http.Handler {
 
 - Go のミドルウェアは `func(http.Handler) http.Handler` という **ただの関数** です。chi や他のライブラリのミドルウェアもこの形なので相互運用できます。
 - `http.ResponseWriter` を埋め込んだ構造体で `WriteHeader` を上書きし、ステータスコードを記録しています (埋め込みによる委譲、第5章)。
+- ラップすると、元の ResponseWriter が持っていた `http.Flusher` などのインターフェースが外から見えなくなります。`Unwrap()` メソッドを用意しておくと、`http.ResponseController` が内側をたどって `Flush` などを呼べるようになります。
 - `log/slog` の `InfoContext` に `r.Context()` を渡しておくと、後で OpenTelemetry のトレース ID をログに載せる Handler を足すときに役立ちます。
 
 ## Step 6. main — 組み立て・設定・グレースフルシャットダウン

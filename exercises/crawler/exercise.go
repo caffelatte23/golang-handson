@@ -9,8 +9,12 @@ package crawler
 //   - 複数のページを並行に Fetch する (goroutine を使う)
 //   - Fetch がエラーのページは結果に含めない
 //   - go test -race で競合が出ない
+//   - 深さの制限を正しく守る (残りの深さが少ない経路で先に到達した URL があっても、
+//     深さに余裕のある別の経路から辿れるページは取得する)
 //
-// ヒント: 訪問済みの map を sync.Mutex で守り、sync.WaitGroup で全 goroutine の終了を待ちます。
+// ヒント: 訪問済みの map を sync.Mutex で守り、sync.WaitGroup で goroutine の終了を待ちます。
+// 深さの制限を正しく守るには、同じ深さの URL をまとめて並行に取得し、
+// それが終わってから次の深さに進む「幅優先探索」にすると簡単です。
 //
 // 確認: go test -race ./crawler/
 func Crawl(url string, depth int, fetcher Fetcher) map[string]string {

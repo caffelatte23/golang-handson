@@ -13,17 +13,22 @@ func TestChecker_Check(t *testing.T) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/ok", func(w http.ResponseWriter, r *http.Request) {})
 	mux.HandleFunc("/missing", http.NotFound)
+	mux.HandleFunc("/get-only", func(w http.ResponseWriter, r *http.Request) { // HEAD 非対応のサーバーを模す
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
 	srv := httptest.NewServer(mux)
 	defer srv.Close()
 
 	c := &Checker{Client: srv.Client(), Concurrency: 2}
-	urls := []string{srv.URL + "/ok", srv.URL + "/missing", "http://127.0.0.1:1/unreachable"}
+	urls := []string{srv.URL + "/ok", srv.URL + "/missing", "http://127.0.0.1:1/unreachable", srv.URL + "/get-only"}
 
 	got, err := c.Check(context.Background(), urls)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(got) != 3 {
+	if len(got) != len(urls) {
 		t.Fatalf("len = %d", len(got))
 	}
 	// 入力順が保たれていること
@@ -40,6 +45,9 @@ func TestChecker_Check(t *testing.T) {
 	}
 	if got[2].Err == nil {
 		t.Errorf("unreachable should have error")
+	}
+	if !got[3].OK() {
+		t.Errorf("/get-only should be OK via GET fallback: %+v", got[3])
 	}
 }
 

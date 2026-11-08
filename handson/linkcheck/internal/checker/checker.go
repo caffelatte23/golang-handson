@@ -18,7 +18,7 @@ type Result struct {
 	Err      error
 }
 
-// OK はリンクが正常 (2xx/3xx) かどうかを返します。
+// OK はリンクが正常かどうかを返します (ステータスが 400 未満 = 2xx/3xx なら正常)。
 func (r Result) OK() bool { return r.Err == nil && r.Status < 400 }
 
 // Checker は設定を保持します。
@@ -57,20 +57,28 @@ func (c *Checker) checkOne(ctx context.Context, url string) Result {
 	start := time.Now()
 	res := Result{URL: url}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodHead, url, nil)
+	// まず軽い HEAD で確認し、HEAD に対応していないサーバー (405/501) なら GET で再試行する
+	status, err := c.do(ctx, http.MethodHead, url)
+	if err == nil && (status == http.StatusMethodNotAllowed || status == http.StatusNotImplemented) {
+		status, err = c.do(ctx, http.MethodGet, url)
+	}
+	res.Status, res.Err, res.Duration = status, err, time.Since(start)
+	return res
+}
+
+func (c *Checker) do(ctx context.Context, method, url string) (int, error) {
+	req, err := http.NewRequestWithContext(ctx, method, url, nil)
 	if err != nil {
-		res.Err = err
-		return res
+		return 0, err
 	}
 	req.Header.Set("User-Agent", "linkcheck-handson/1.0")
 
 	resp, err := c.Client.Do(req)
-	res.Duration = time.Since(start)
 	if err != nil {
-		res.Err = err
-		return res
+		return 0, err
 	}
-	defer resp.Body.Close() // Body は必ず Close する (bodyclose linter がチェック)
-	res.Status = resp.StatusCode
-	return res
+	// Body は必ず Close する (bodyclose linter がチェック)。
+	// GET の本文は読まないので、すぐに閉じる
+	defer resp.Body.Close()
+	return resp.StatusCode, nil
 }

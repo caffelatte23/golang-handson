@@ -36,12 +36,19 @@ package lru
 
 // Cache は容量が固定の LRU キャッシュです。
 // ゼロ値は使えないので、New で作成してください。
-type Cache[K comparable, V any] struct { /* ... */
+type Cache[K comparable, V any] struct {
+	capacity int
+	items    map[K]V
 }
 
 // New は容量 capacity のキャッシュを作成します。
 // capacity が 1 未満のときは panic します。
-func New[K comparable, V any](capacity int) *Cache[K, V] { /* ... */ }
+func New[K comparable, V any](capacity int) *Cache[K, V] {
+	if capacity < 1 {
+		panic("lru: capacity must be >= 1")
+	}
+	return &Cache[K, V]{capacity: capacity, items: make(map[K]V)}
+}
 ```
 
 **書き方の規則**
@@ -56,18 +63,25 @@ func New[K comparable, V any](capacity int) *Cache[K, V] { /* ... */ }
 ```go
 // Package json implements encoding and decoding of JSON.
 //
-// # Encoding                        ← "# " で始まる行は見出しになる
+// # Encoding
 //
-// Marshal は値を JSON に変換します。詳しくは [Marshal] を参照してください。   ← [ ] でリンク
+// Marshal は値を JSON に変換します。詳しくは [Marshal] を参照してください。
 //
-//   - リスト項目 1                   ← "-" で始まる行は箇条書きになる
+//   - リスト項目 1
 //   - リスト項目 2
 //
 // 例:
 //
-//	b, err := json.Marshal(v)        ← タブでインデントした行はコードブロックになる
+//	b, err := json.Marshal(v)
 package json
 ```
+
+| 書き方 | 表示 |
+| --- | --- |
+| `# ` で始まる行 (前後に空行) | 見出し |
+| `[Marshal]` や `[strings.Cut]` | 識別子へのリンク |
+| `-` や `1.` で始まり、インデントした行 | 箇条書き |
+| タブでインデントした行 | コードブロック |
 
 ```bash
 go doc fmt.Println         # 関数のドキュメント
