@@ -2,7 +2,7 @@
 
 package equivtree
 
-import "github.com/caffelatte23/golang-hanson/exercises/equivtree/tree"
+import "github.com/caffelatte23/golang-handson/exercises/equivtree/tree"
 
 // Walk は t の値を昇順に ch へ送り、送り終えたら ch を close します。
 func Walk(t *tree.Tree, ch chan int) {

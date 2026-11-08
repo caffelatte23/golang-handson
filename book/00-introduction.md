@@ -1,5 +1,7 @@
 # 第0章 はじめに — Go とはどんな言語か
 
+> **本書について**: これは個人が学習・整理のために作成した **非公式** のドキュメントです。Go プロジェクトや Google とは関係がなく、A Tour of Go や Effective Go の公式翻訳でもありません。内容の多くは AI (Claude) の支援を受けて執筆しています。サンプルコードは自動テストで検証していますが、誤りが含まれる可能性があります。正確な情報は [go.dev](https://go.dev/doc/) の公式ドキュメントを参照してください。
+
 ## この本のねらい
 
 本書は、Go を書いたことがない人や少しだけ触ったことがある人が、**この 1 冊で Go の基礎から実務の入り口までをひととおり学べる** ように作った日本語のハンズオンブックです。
@@ -96,8 +98,8 @@ Go は特に **クラウドインフラ・CLI・ネットワークサーバー**
 第3〜8章の終わりには、A Tour of Go と同じテーマの演習があります。リポジトリを clone して、`exercises/` ディレクトリで取り組みます。
 
 ```bash
-git clone https://github.com/caffelatte23/golang-hanson.git
-cd golang-hanson/exercises
+git clone https://github.com/caffelatte23/golang-handson.git
+cd golang-handson/exercises
 # exercise.go の TODO を実装して、テストが通れば正解
 go test ./sqrt/
 # 解答例のコードでテストを実行する

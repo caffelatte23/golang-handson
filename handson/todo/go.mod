@@ -1,4 +1,4 @@
-module github.com/caffelatte23/golang-hanson/handson/todo
+module github.com/caffelatte23/golang-handson/handson/todo
 
 go 1.24
 

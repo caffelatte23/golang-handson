@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/caffelatte23/golang-hanson/handson/linkcheck/internal/checker"
+	"github.com/caffelatte23/golang-handson/handson/linkcheck/internal/checker"
 )
 
 func main() {
