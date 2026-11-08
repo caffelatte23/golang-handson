@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (${{ matrix.module }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [todo, bookshelf-api, linkcheck, lru]
+    defaults:
+      run:
+        working-directory: handson/${{ matrix.module }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: handson/${{ matrix.module }}/go.mod
+          cache-dependency-path: handson/${{ matrix.module }}/go.mod
+      - run: go vet ./...
+      - run: go test -race -coverprofile=coverage.out ./...
+      - uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.5
+          working-directory: handson/${{ matrix.module }}
+          args: --config ${{ github.workspace }}/.golangci.yml

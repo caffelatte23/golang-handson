@@ -1,0 +1,13 @@
+# binaries
+/handson/todo/todo
+/handson/linkcheck/linkcheck
+/handson/bookshelf-api/server
+dist/
+*.exe
+*.test
+*.out
+coverage.*
+# editor / OS
+.idea/
+.vscode/
+.DS_Store
