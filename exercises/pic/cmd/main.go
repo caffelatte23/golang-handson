@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/caffelatte23/golang-hanson/exercises/pic"
+	"github.com/caffelatte23/golang-handson/exercises/pic"
 )
 
 func main() {

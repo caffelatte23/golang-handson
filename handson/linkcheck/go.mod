@@ -1,4 +1,4 @@
-module github.com/caffelatte23/golang-hanson/handson/linkcheck
+module github.com/caffelatte23/golang-handson/handson/linkcheck
 
 go 1.24.0
 

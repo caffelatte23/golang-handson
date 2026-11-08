@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/caffelatte23/golang-hanson/handson/bookshelf-api/internal/book"
+	"github.com/caffelatte23/golang-handson/handson/bookshelf-api/internal/book"
 )
 
 // Server は依存 (Repository, Logger) を保持し、http.Handler を組み立てます。

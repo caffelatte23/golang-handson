@@ -4,7 +4,7 @@ package main
 import (
 	"os"
 
-	"github.com/caffelatte23/golang-hanson/handson/todo/internal/cli"
+	"github.com/caffelatte23/golang-handson/handson/todo/internal/cli"
 )
 
 func main() {

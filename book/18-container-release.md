@@ -77,7 +77,7 @@ builds:
     flags:
       - -trimpath
     ldflags:
-      - -s -w -X github.com/caffelatte23/golang-hanson/handson/todo/internal/cli.version={{.Version}}
+      - -s -w -X github.com/caffelatte23/golang-handson/handson/todo/internal/cli.version={{.Version}}
 
 archives:
   - formats: [tar.gz]

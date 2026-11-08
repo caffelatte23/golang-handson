@@ -288,7 +288,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/caffelatte23/golang-hanson/handson/todo/internal/todo"
+	"github.com/caffelatte23/golang-handson/handson/todo/internal/todo"
 	"github.com/spf13/cobra"
 )
 
@@ -377,7 +377,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/caffelatte23/golang-hanson/handson/todo/internal/todo"
+	"github.com/caffelatte23/golang-handson/handson/todo/internal/todo"
 	"github.com/spf13/cobra"
 )
 
@@ -525,7 +525,7 @@ package main
 import (
 	"os"
 
-	"github.com/caffelatte23/golang-hanson/handson/todo/internal/cli"
+	"github.com/caffelatte23/golang-handson/handson/todo/internal/cli"
 )
 
 func main() {
@@ -552,7 +552,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/caffelatte23/golang-hanson/handson/todo/internal/todo"
+	"github.com/caffelatte23/golang-handson/handson/todo/internal/todo"
 )
 
 // memStore はテスト用のインメモリ Store です。

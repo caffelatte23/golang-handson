@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/caffelatte23/golang-hanson/handson/todo/internal/todo"
+	"github.com/caffelatte23/golang-handson/handson/todo/internal/todo"
 	"github.com/spf13/cobra"
 )
 

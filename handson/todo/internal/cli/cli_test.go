@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/caffelatte23/golang-hanson/handson/todo/internal/todo"
+	"github.com/caffelatte23/golang-handson/handson/todo/internal/todo"
 )
 
 // memStore はテスト用のインメモリ Store です。

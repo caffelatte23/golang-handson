@@ -1,9 +1,13 @@
-# Go チュートリアル & ハンズオンブック
+# Go チュートリアル & ハンズオンブック (非公式・個人用)
+
+> [!NOTE]
+> **これは個人が学習・整理のために作成した非公式のドキュメントです。** Go プロジェクトや Google とは関係がなく、[A Tour of Go](https://go.dev/tour/) や [Effective Go](https://go.dev/doc/effective_go) の公式翻訳でもありません。内容の多くは AI (Claude) の支援を受けて執筆しており、サンプルコードは自動テストで検証していますが、誤りが含まれる可能性があります。正確な情報は [go.dev](https://go.dev/doc/) の公式ドキュメントを参照してください。
 
 Go 言語の基礎から、**GitHub 上の主要 OSS の書き方・技術構成の調査**、そして **CLI / Web API / 並行処理ツール / ライブラリ** を実際に作るハンズオンまでをまとめた日本語の学習用ブックです。
 
 第1部は、公式の [A Tour of Go](https://go.dev/tour/) と [Effective Go](https://go.dev/doc/effective_go) が扱う内容をすべて含んでいます。本書だけで、言語の基礎から Go らしい書き方まで学べます。本文のサンプルプログラムは CI で実際に実行し、掲載している出力と一致することを確かめています。Tour と同じテーマの演習には、自動採点のテストを付けています。
 
+- Web 版: https://caffelatte23.github.io/golang-handson/ (GitHub Pages)
 - 対象: Go 初心者〜初中級者 (他言語の経験がある方)
 - 対応バージョン: Go 1.24 以上 (Go 1.24 と Go 1.27 で動作を確認。サポートされている最新版の利用を推奨)
 - OSS 調査時点: 2026 年 11 月 (kubernetes, cli/cli, prometheus, terraform, hugo, caddy, traefik, gitea, etcd, containerd, k6, minio, fzf, lazygit, glow の 15 リポジトリ)
@@ -57,7 +61,8 @@ Go 言語の基礎から、**GitHub 上の主要 OSS の書き方・技術構成
 │   ├── bookshelf-api/
 │   ├── linkcheck/
 │   └── lru/
-├── scripts/              # 本文のサンプルコードを検証するスクリプト
+├── scripts/              # 本文のサンプルコードの検証、Web 版の生成
+├── site/                 # Web 版 (mdBook) の設定
 ├── .github/workflows/    # CI (本文の検証 / 演習の解答 / ハンズオンの test・lint)
 ├── .golangci.yml         # golangci-lint v2 設定
 └── Makefile
@@ -66,8 +71,8 @@ Go 言語の基礎から、**GitHub 上の主要 OSS の書き方・技術構成
 ## 完成コードを動かす
 
 ```bash
-git clone https://github.com/caffelatte23/golang-hanson.git
-cd golang-hanson
+git clone https://github.com/caffelatte23/golang-handson.git
+cd golang-handson
 
 make test   # 全ハンズオンと演習の解答例のテスト (-race 付き)
 make book   # 本文のサンプルプログラムを実行して、掲載している出力と照合する

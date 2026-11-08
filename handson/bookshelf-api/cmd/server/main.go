@@ -12,8 +12,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/caffelatte23/golang-hanson/handson/bookshelf-api/internal/book"
-	"github.com/caffelatte23/golang-hanson/handson/bookshelf-api/internal/httpapi"
+	"github.com/caffelatte23/golang-handson/handson/bookshelf-api/internal/book"
+	"github.com/caffelatte23/golang-handson/handson/bookshelf-api/internal/httpapi"
 )
 
 func main() {

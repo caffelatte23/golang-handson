@@ -1,0 +1,17 @@
+[book]
+title = "Go チュートリアル & ハンズオンブック (非公式・個人用)"
+authors = ["caffelatte23"]
+language = "ja"
+src = "src" # scripts/build_site.py が book/ から生成する
+
+[output.html]
+site-url = "/golang-handson/"
+git-repository-url = "https://github.com/caffelatte23/golang-handson"
+default-theme = "light"
+preferred-dark-theme = "navy"
+
+[output.html.search]
+enable = true
+
+[output.html.playground]
+runnable = false # Rust 用の実行ボタンを出さない

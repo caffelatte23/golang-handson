@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/caffelatte23/golang-hanson/exercises/equivtree/tree"
+	"github.com/caffelatte23/golang-handson/exercises/equivtree/tree"
 )
 
 func TestWalk(t *testing.T) {

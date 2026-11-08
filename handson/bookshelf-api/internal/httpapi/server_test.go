@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/caffelatte23/golang-hanson/handson/bookshelf-api/internal/book"
+	"github.com/caffelatte23/golang-handson/handson/bookshelf-api/internal/book"
 )
 
 func newTestServer(t *testing.T) *httptest.Server {
